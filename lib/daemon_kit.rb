@@ -34,6 +34,7 @@ module DaemonKit
   autoload :RuoteWorkitem,          'daemon_kit/ruote_workitem'
   autoload :RuotePseudoParticipant, 'daemon_kit/ruote_pseudo_participant'
   autoload :XMPP,                   'daemon_kit/xmpp'
+  autoload :Campfire,               'daemon_kit/campfire'
 
   class << self
 

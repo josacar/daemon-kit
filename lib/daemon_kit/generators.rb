@@ -12,6 +12,7 @@ module DaemonKit
     autoload :TestUnitGenerator,    'generators/daemon_kit/test_unit/test_unit_generator'
     autoload :RuoteGenerator,       'generators/daemon_kit/ruote/ruote_generator'
     autoload :XmppGenerator,        'generators/daemon_kit/xmpp/xmpp_generator'
+    autoload :CampfireGenerator,    'generators/daemon_kit/campfire/campfire_generator'
 
     class << self
 
