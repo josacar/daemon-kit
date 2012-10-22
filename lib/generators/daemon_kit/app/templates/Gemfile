@@ -9,7 +9,7 @@
 source :gemcutter
 
 # daemon-kit
-gem 'daemon-kit'
+gem 'daemon-kit', :git => 'git@github.com:josacar/daemon-kit.git'
 
 # safely (http://github.com/kennethkalmer/safely)
 gem 'safely'
