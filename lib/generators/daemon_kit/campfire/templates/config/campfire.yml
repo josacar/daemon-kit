@@ -2,12 +2,14 @@
 
 # The configuration specifies the following keys:
 # * api_token  - API token for connecting Campfire
-# * chat_rooms   - Array of chat rooms to join
+# * domain     - Campfire subdomain
+# * chat_rooms - Array of chat rooms to join
 
 defaults: &defaults
   api_token: INVALIDAPIKEY
+  domain: domain.com
   chat_rooms:
-    - 'Machines Heaven'
+    - 'Default room'
 
 development:
   <<: *defaults

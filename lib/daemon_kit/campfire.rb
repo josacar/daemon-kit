@@ -1,10 +1,8 @@
-require 'blather/client/client'
-require 'blather/client/dsl'
+require 'tinder'
 
 module DaemonKit
   # Thin wrapper around the blather DSL
   class Campfire
-    include ::Blather::DSL
 
     class << self
 
@@ -13,87 +11,49 @@ module DaemonKit
         DaemonKit.trap('TERM') { ::EM.stop }
 
         DaemonKit::EM.run {
-
-          xmpp = new
-          xmpp.instance_eval( &block )
-          xmpp.run
+          campfire = new
+          campfire.instance_eval( &block )
+          campfire.run
         }
       end
     end
 
     def initialize
-      @config = DaemonKit::Config.load('xmpp')
+      @config = DaemonKit::Config.load('campfire')
 
-      if @config.enable_logging
-        Blather.logger = DaemonKit.logger
-      end
+      api_token = @config.api_token
+      domain = @config.domain
+      chat_rooms = @config.chat_rooms
 
-      jid = if @config.resource
-        "#{@config.jabber_id}/#{@config.resource}"
-      else
-        @config.jabber_id
-      end
-
-      setup jid, @config.password
-
-      when_ready do
-        configure_roster!
-        become_available
-      end
-
-      return if @config['require_master'] == false
-
-      message do |m|
-        trusted?( m ) ? pass : halt
-      end
+      connect_campfire
+      join_chat_rooms
+      listen_to_rooms
     end
 
-    def configure_roster!
-      DaemonKit.logger.debug 'Configuring roster'
+    def connect_campfire
+      campfire = Tinder::Campfire.new(domain, :token => token)
+    end
 
-      my_roster.each do |(jid, item)|
-        unless contacts.include?( jid )
-          DaemonKit.logger.debug "Removing #{jid} from roster"
+    def join_chat_rooms
+      chat_rooms.each { |room| campfire.find_room_by_name(room) }
+    end
 
-          my_roster.delete( item.jid )
-          next
+    def listen_to_rooms
+      chat_rooms.each do
+        room.listen do |m|
+          if m[:body] =~ /^\/pt_deploy/i
+            args = m[:body].split(" ")
+#            if args[1] == 'status' and args[2] == Settings[:deployed_environment]
+#              room.paste()
+#            end
+            room.paste("Cabesahuevo!")
+          end
         end
       end
-
-      contacts.each do |jid|
-        DaemonKit.logger.debug "Adding #{jid} to roster"
-
-        my_roster.add( Blather::JID.new( jid ) )
-      end
-
-      my_roster.each do |(jid,item)|
-        item.subscription = :both
-        item.ask = :subscribe
-      end
-    end
-
-    def become_available
-      set_status( :chat, "#{DaemonKit.configuration.daemon_name} is available" )
-    end
-
-    def trusted?( message )
-      @config.masters.include?( message.from.stripped.to_s )
-    end
-
-    def contacts
-      @config.masters + @config.supporters
     end
 
     def run
       client.run
-    end
-
-    def busy( message = nil, &block )
-      set_status( :dnd, message )
-
-      block.call
-
-      become_available
     end
 
   end
