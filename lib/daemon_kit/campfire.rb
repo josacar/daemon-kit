@@ -1,11 +1,9 @@
 require 'tinder'
 
 module DaemonKit
-  # Thin wrapper around the blather DSL
   class Campfire
 
     class << self
-
       def run( &block )
         DaemonKit.trap('INT') { ::EM.stop }
         DaemonKit.trap('TERM') { ::EM.stop }
@@ -21,9 +19,10 @@ module DaemonKit
     def initialize
       @config = DaemonKit::Config.load('campfire')
 
-      api_token = @config.api_token
-      domain = @config.domain
-      chat_rooms = @config.chat_rooms
+      @api_token = @config.api_token
+      @domain = @config.domain
+      @chat_rooms = @config.chat_rooms
+      @open_rooms = []
 
       connect_campfire
       join_chat_rooms
@@ -31,21 +30,18 @@ module DaemonKit
     end
 
     def connect_campfire
-      campfire = Tinder::Campfire.new(domain, :token => token)
+      @campfire = Tinder::Campfire.new(@domain, :token => @api_token)
     end
 
     def join_chat_rooms
-      chat_rooms.each { |room| campfire.find_room_by_name(room) }
+      @chat_rooms.each { |room| @open_rooms << @campfire.find_room_by_name(room) }
     end
 
     def listen_to_rooms
-      chat_rooms.each do
+      @open_rooms.each do |room|
         room.listen do |m|
-          if m[:body] =~ /^\/pt_deploy/i
+          if m[:body] =~ /^\/insult/i
             args = m[:body].split(" ")
-#            if args[1] == 'status' and args[2] == Settings[:deployed_environment]
-#              room.paste()
-#            end
             room.paste("Cabesahuevo!")
           end
         end
@@ -53,7 +49,7 @@ module DaemonKit
     end
 
     def run
-      client.run
+      #client.run
     end
 
   end

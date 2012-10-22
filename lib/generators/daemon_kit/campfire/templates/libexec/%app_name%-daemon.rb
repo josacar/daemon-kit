@@ -14,15 +14,4 @@ end
 
 DaemonKit::Campfire.run do
 #FIXME
-  when_ready { DaemonKit.logger.info "Connected as #{jid}" }
-
-  # Auto approve subscription requests
-  subscription :request? do |s|
-    write_to_stream s.approve!
-  end
-
-  # Echo back what was said
-  message :chat?, :body do |m|
-    write_to_stream m.reply
-  end
 end
