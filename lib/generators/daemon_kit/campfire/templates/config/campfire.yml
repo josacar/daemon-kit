@@ -1,0 +1,19 @@
+# Campfire configuration file
+
+# The configuration specifies the following keys:
+# * api_token  - API token for connecting Campfire
+# * chat_rooms   - Array of chat rooms to join
+
+defaults: &defaults
+  api_token: INVALIDAPIKEY
+  chat_rooms:
+    - 'Machines Heaven'
+
+development:
+  <<: *defaults
+
+test:
+  <<: *defaults
+
+production:
+  <<: *defaults
