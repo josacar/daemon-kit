@@ -1,7 +1,7 @@
 module DaemonKit
   module Generators
     class AppGenerator < Base
-      INSTALLERS = %w( default amqp cron nanite_agent ruote xmpp campfire )
+      INSTALLERS = %w( default amqp campfire cron nanite_agent ruote xmpp )
       DEPLOYERS  = %w( capistrano )
       TEST_FRAMEWORKS = %w( none rspec test_unit )
       add_shebang_option!
@@ -93,6 +93,8 @@ module DaemonKit
           directory 'libexec'
         when 'amqp'
           invoke DaemonKit::Generators::AmqpGenerator
+        when 'campfire'
+          invoke DaemonKit::Generators::CampfireGenerator
         when 'cron'
           invoke DaemonKit::Generators::CronGenerator
         when 'nanite_agent'
@@ -101,8 +103,6 @@ module DaemonKit
           invoke DaemonKit::Generators::RuoteGenerator
         when 'xmpp'
           invoke DaemonKit::Generators::XmppGenerator
-        when 'campfire'
-          invoke DaemonKit::Generators::CampfireGenerator
         end
       end
 
